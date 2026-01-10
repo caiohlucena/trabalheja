@@ -1,0 +1,236 @@
+/* 1. CONFIGURAÇÕES E RESETS */
+:root {
+    --gold: #C5A028;
+    --black: #000000;
+    --gray-light: #f8f9fa;
+    --gray-border: #e5e5e5;
+    --text-muted: #6c757d;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    background-color: #ffffff;
+    color: var(--black);
+    font-family: 'Inter', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.6;
+}
+
+/* 2. ANIMAÇÕES E ESTRUTURA */
+@keyframes fadeInSlide {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.reveal {
+    animation: fadeInSlide 1s cubic-bezier(0.19, 1, 0.22, 1) forwards;
+}
+
+h1, .h1-display {
+    font-size: clamp(2.5rem, 7vw, 4.5rem);
+    font-weight: 900;
+    line-height: 0.95;
+    letter-spacing: -3px;
+    text-transform: uppercase;
+    margin-bottom: 2rem;
+}
+
+/* 3. BOTÕES (SISTEMA UNIFICADO) */
+.btn-gold-impact, .btn-edit-premium, .btn-delete-premium {
+    text-transform: uppercase;
+    font-weight: 800;
+    letter-spacing: 1px;
+    transition: all 0.4s ease;
+    text-decoration: none;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.btn-gold-impact {
+    background-color: var(--black);
+    color: #ffffff !important;
+    padding: 18px 40px;
+    border: 1px solid var(--black);
+}
+
+.btn-gold-impact:hover {
+    background-color: #ffffff;
+    color: var(--black) !important;
+}
+
+.btn-edit-premium {
+    font-size: 0.75rem;
+    border: 1px solid var(--black);
+    padding: 8px 16px;
+    color: var(--black);
+}
+
+.btn-edit-premium:hover {
+    background: var(--black);
+    color: #fff !important;
+}
+
+/* 4. FORMULÁRIOS (Onde havia mais redundância) */
+/* Unificamos os seletores do Django e os manuais aqui */
+.form-control, 
+.form-select, 
+.premium-input-wrapper input, 
+.premium-input-wrapper textarea, 
+.premium-input-wrapper select,
+form input[type="text"], 
+form input[type="password"], 
+form input[type="email"],
+form input[type="number"],
+form textarea {
+    display: block;
+    width: 100%;
+    padding: 15px !important;
+    border: 1px solid var(--gray-border) !important;
+    background-color: #ffffff !important;
+    font-family: inherit;
+    font-size: 0.95rem;
+    border-radius: 0 !important;
+    transition: all 0.3s ease !important;
+    color: var(--black);
+}
+
+/* Efeito de Foco Unificado */
+.form-control:focus, 
+.premium-input-wrapper input:focus, 
+form input:focus, 
+form textarea:focus {
+    outline: none !important;
+    border-color: var(--black) !important;
+    background-color: var(--gray-light) !important;
+    box-shadow: none !important;
+}
+
+.form-label {
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--black);
+    margin-bottom: 10px;
+    display: block;
+}
+
+/* 5. COMPONENTES ESPECÍFICOS */
+.impact-card {
+    border: 1px solid var(--gray-border);
+    padding: 40px;
+    transition: all 0.5s ease;
+    background: #fff;
+}
+
+.impact-card:hover {
+    border-color: var(--black);
+    background-color: var(--gray-light);
+}
+
+.number-label {
+    font-size: 0.8rem;
+    font-weight: 900;
+    color: var(--gold);
+    display: block;
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+}
+
+/* 6. TABELAS E DASHBOARD */
+.dashboard-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.dashboard-table th {
+    text-transform: uppercase;
+    font-size: 0.7rem;
+    font-weight: 900;
+    padding: 15px;
+    border-bottom: 2px solid var(--black);
+    text-align: left;
+}
+
+.dashboard-table td {
+    padding: 15px;
+    border-bottom: 1px solid var(--gray-border);
+    font-size: 0.9rem;
+}
+
+/* 7. INPUT FILE (CUSTOMIZADO) */
+input[type="file"]::file-selector-button {
+    background: var(--black);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    text-transform: uppercase;
+    font-weight: 800;
+    font-size: 0.7rem;
+    margin-right: 15px;
+    transition: 0.3s;
+}
+
+input[type="file"]::file-selector-button:hover {
+    background: var(--gold);
+}
+
+/* 8. UTILITÁRIOS */
+.badge-status {
+    padding: 5px 12px;
+    font-size: 0.65rem;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.badge-approved { background: var(--black); color: white; }
+.badge-pending { border: 1px solid var(--black); }
+
+/* Container de Status Unificado */
+.status-update-group {
+    display: flex;
+    align-items: stretch;
+    height: 40px; /* Altura fixa para alinhar ambos */
+}
+
+/* O seletor (dropdown) */
+.status-update-group .form-select-sm {
+    border: 1px solid var(--black) !important;
+    border-right: none !important; /* Cola no botão */
+    background-color: #ffffff;
+    color: var(--black);
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.7rem;
+    border-radius: 0 !important;
+    padding: 0 10px;
+    flex-grow: 1;
+}
+
+/* O botão de confirmação (Preto com escrita branca) */
+.status-update-group .btn-status-submit {
+    background-color: var(--black) !important;
+    color: #ffffff !important;
+    border: 1px solid var(--black) !important;
+    padding: 0 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    border-radius: 0 !important;
+}
+
+.status-update-group .btn-status-submit:hover {
+    background-color: var(--gold) !important;
+    border-color: var(--gold) !important;
+}
+
+/* Ícone dentro do botão */
+.status-update-group .btn-status-submit i {
+    color: #ffffff !important;
+    line-height: 0;
+}

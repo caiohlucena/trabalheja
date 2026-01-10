@@ -1,0 +1,40 @@
+{% extends "base/base.html" %}
+{% block content %}
+
+<div class="container mt-5">
+    <h2 class="mb-4 fw-black text-uppercase" style="letter-spacing: -1px;">Minhas candidaturas</h2>
+
+    <div class="list-group list-group-flush">
+        {% for c in candidaturas %}
+            <div class="list-group-item d-flex justify-content-between align-items-center border-start-0 border-end-0 py-3">
+                <div>
+                    <h5 class="mb-1 fw-bold">{{ c.vaga.titulo }}</h5>
+                    <small class="text-muted">Candidatura realizada em {{ c.criada_em|date:"d/m/Y" }}</small>
+                </div>
+
+                <div class="text-end">
+                    {% if c.status == 'aprovada' %}
+                        <span class="badge rounded-pill bg-success px-3 py-2 text-uppercase shadow-sm" style="font-size: 0.75rem;">
+                            {{ c.get_status_display }}
+                        </span>
+                    {% elif c.status == 'em_analise' %}
+                        <span class="badge rounded-pill bg-light text-dark border px-3 py-2 text-uppercase" style="font-size: 0.75rem;">
+                            {{ c.get_status_display }}
+                        </span>
+                    {% else %}
+                        <span class="text-muted text-uppercase fw-bold" style="font-size: 0.7rem;">
+                            {{ c.get_status_display }}
+                        </span>
+                    {% endif %}
+                </div>
+            </div>
+        {% empty %}
+            <div class="text-center py-5">
+                <p class="text-muted">Você ainda não se candidatou a nenhuma vaga.</p>
+                <a href="/vagas/" class="btn btn-outline-dark btn-sm mt-2">Explorar vagas</a>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,81 @@
+{% extends "base/base.html" %}
+
+{% block title %}{{ titulo }}{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-7 col-md-9 reveal">
+            
+            <div class="border-bottom border-dark pb-3 mb-5">
+                <span class="number-label text-uppercase">Histórico Profissional</span>
+                <h2 class="display-6 fw-black text-uppercase m-0">{{ titulo }}</h2>
+            </div>
+
+            <form method="post" class="premium-form">
+                {% csrf_token %}
+                
+                <div class="row g-4">
+                    {% for field in form %}
+                        {# Verificamos se o campo é a Data Fim para dar um ID especial a ele #}
+                        <div class="col-12 mb-2 {% if field.name == 'data_fim' %}div-data-fim{% endif %}">
+                            
+                            {# Estilização especial para o Checkbox #}
+                            {% if field.field.widget.input_type == 'checkbox' %}
+                                <div class="d-flex align-items-center gap-2 py-2">
+                                    {{ field }}
+                                    <label class="form-label mb-0" style="cursor: pointer;">{{ field.label }}</label>
+                                </div>
+                            {% else %}
+                                <label class="form-label">{{ field.label }}</label>
+                                <div class="premium-input-wrapper">
+                                    {{ field }}
+                                </div>
+                            {% endif %}
+
+                            {% if field.errors %}
+                                <div class="text-danger fw-bold small mt-1 text-uppercase" style="font-size: 0.65rem;">
+                                    {{ field.errors|striptags }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <div class="mt-5 pt-4 border-top d-flex align-items-center gap-4">
+                    <button type="submit" class="btn-gold-impact px-5">
+                        Salvar Registro
+                    </button>
+                    <a href="/candidato/perfil/" class="text-muted text-uppercase small fw-bold text-decoration-none border-bottom border-dark pb-1">
+                        Cancelar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Seleciona o checkbox de 'atual'. O Django geralmente coloca o name como 'atual'
+        const checkboxAtual = document.querySelector('input[name="atual"]');
+        const divDataFim = document.querySelector('.div-data-fim');
+
+        function toggleDataFim() {
+            if (checkboxAtual.checked) {
+                // Esconde com animação suave
+                divDataFim.style.display = 'none';
+            } else {
+                divDataFim.style.display = 'block';
+            }
+        }
+
+        // Executa ao carregar a página (para casos de edição)
+        if (checkboxAtual && divDataFim) {
+            toggleDataFim();
+            // Adiciona o evento de clique
+            checkboxAtual.addEventListener('change', toggleDataFim);
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,41 @@
+{% extends "base/base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+
+    <h2 class="mb-3">Candidatar-se à vaga</h2>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <h4>{{ vaga.titulo }}</h4>
+            <p><strong>Departamento:</strong> {{ vaga.departamento }}</p>
+            <p><strong>Modelo:</strong> {{ vaga.get_modelo_trabalho_display }}</p>
+            <p><strong>Contrato:</strong> {{ vaga.get_tipo_contrato_display }}</p>
+            <p><strong>Localização:</strong> {{ vaga.localizacao }}</p>
+        </div>
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <div class="mb-3">
+            <label class="form-label">Mensagem (opcional)</label>
+            <textarea
+                name="mensagem"
+                class="form-control"
+                rows="4"
+                placeholder="Fale brevemente por que você se encaixa nessa vaga"
+            ></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary">
+            Enviar candidatura
+        </button>
+
+        <a href="{% url 'vaga_list' %}" class="btn btn-secondary ms-2">
+            Cancelar
+        </a>
+    </form>
+
+</div>
+{% endblock %}

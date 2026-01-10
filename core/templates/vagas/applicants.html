@@ -1,0 +1,79 @@
+{% extends "base/base.html" %}
+
+{% block title %}Triagem: {{ vaga.titulo }}{% endblock %}
+
+{% block content %}
+<div class="container py-5 reveal">
+    <div class="row border-bottom border-dark pb-4 mb-5 align-items-end">
+        <div class="col-md-8">
+            <span class="number-label">Gestão de Candidaturas</span>
+            <h2 class="display-6 fw-black text-uppercase m-0">{{ vaga.titulo }}</h2>
+            <p class="small text-muted text-uppercase fw-bold mt-2">
+                ID: {{ vaga.codigo_vaga }} | Total: {{ candidaturas.count }} interessados
+            </p>
+        </div>
+        <div class="col-md-4 text-md-end">
+            <a href="{% url 'company_dashboard' %}" class="text-dark fw-bold text-uppercase small text-decoration-none border-bottom border-dark pb-1">
+                Voltar ao Painel
+            </a>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        {% for c in candidaturas %}
+        <div class="col-12">
+            <div class="impact-card p-4">
+                <div class="row align-items-center">
+                    
+                    <div class="col-lg-4 mb-3 mb-lg-0 border-end">
+                        <span class="number-label" style="font-size: 0.6rem;">Perfil do Talento</span>
+                        <h3 class="h5 fw-black text-uppercase mb-1">{{ c.candidato.get_full_name|default:c.candidato.username }}</h3>
+                        <p class="small text-muted mb-3">{{ c.candidato.email }}</p>
+                        <a href="#" class="btn-edit-premium py-1 px-3" style="font-size: 0.65rem;">Visualizar Perfil</a>
+                    </div>
+
+                    <div class="col-lg-4 mb-3 mb-lg-0 px-lg-4">
+                        <span class="number-label" style="font-size: 0.6rem;">Pitch de Apresentação</span>
+                        <p class="small text-dark lh-sm mb-0">
+                            {{ c.mensagem|default:"O candidato não enviou uma mensagem personalizada."|truncatechars:150 }}
+                        </p>
+                    </div>
+
+                    <div class="col-lg-4 text-lg-end">
+                        <div class="d-inline-block text-start" style="width: 240px;">
+                            <label class="form-label mb-2" style="font-size: 0.6rem; color: var(--text-muted);">Mudar Status</label>
+                            
+                            <form method="post" action="{% url 'application_status_update' c.id %}" class="status-update-group">
+                                {% csrf_token %}
+                                <select name="status" class="form-select-sm">
+                                    {% for key, label in c.STATUS_CHOICES %}
+                                        <option value="{{ key }}" {% if key == c.status %}selected{% endif %}>
+                                            {{ label }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                                <button type="submit" class="btn-status-submit">
+                                    <i class="bi bi-arrow-right-short fs-4"></i>
+                                </button>
+                            </form>
+
+                            <div class="badge-status-display 
+                                {% if c.status == 'aprovada' %}status-aprovada
+                                {% elif c.status == 'rejeitada' %}status-rejeitada
+                                {% else %}status-analise{% endif %}">
+                                Atual: {{ c.get_status_display }}
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 py-5 text-center bg-light border">
+            <p class="text-uppercase fw-bold text-muted mb-0">Nenhuma candidatura registrada.</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,96 @@
+{% extends "base/base.html" %}
+{% load humanize %}
+
+{% block title %}{{ vaga.titulo }} | Detalhes da Posição{% endblock %}
+
+{% block content %}
+<div class="container py-5 reveal">
+    <div class="row border-bottom border-dark pb-5 mb-5 align-items-end">
+        <div class="col-lg-8">
+            <span class="number-label">Código da Posição: {{ vaga.codigo_vaga }}</span>
+            <h1 class="display-4 fw-black text-uppercase mb-3">{{ vaga.titulo }}</h1>
+            <div class="d-flex flex-wrap gap-4 text-uppercase fw-bold small">
+                <span class="text-muted"><i class="bi bi-building"></i> {{ vaga.departamento }}</span>
+                <span class="text-muted"><i class="bi bi-geo-alt"></i> {{ vaga.localizacao }}</span>
+                <span style="color: var(--gold);"><i class="bi bi-clock"></i> {{ vaga.get_modelo_trabalho_display }}</span>
+            </div>
+        </div>
+        <div class="col-lg-4 text-lg-end mt-4 mt-lg-0">
+            {% if request.user.profile.tipo == 'candidato' %}
+                <a href="{% url 'vaga_apply' vaga.id %}" class="btn-gold-impact px-5 py-3 w-100 text-center">
+                    Candidatar-se para esta vaga
+                </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="row g-5">
+        <div class="col-lg-8">
+            <section class="mb-5">
+                <h3 class="h6 fw-black text-uppercase border-bottom pb-2 mb-4">Sobre a Oportunidade</h3>
+                <p class="lead fw-light text-dark mb-4">{{ vaga.resumo }}</p>
+                
+                <h4 class="h6 fw-black text-uppercase mb-3">Responsabilidades e Atribuições</h4>
+                <div class="text-muted lh-lg mb-5" style="white-space: pre-line;">{{ vaga.responsabilidades }}</div>
+            </section>
+
+            <section class="mb-5">
+                <h3 class="h6 fw-black text-uppercase border-bottom pb-2 mb-4">Requisitos Estruturais</h3>
+                <div class="row">
+                    <div class="col-md-6 mb-4">
+                        <h5 class="small fw-bold text-uppercase">Obrigatórios</h5>
+                        <p class="small text-muted" style="white-space: pre-line;">{{ vaga.requisitos_obrigatorios }}</p>
+                    </div>
+                    <div class="col-md-6 mb-4">
+                        <h5 class="small fw-bold text-uppercase">Desejáveis / Diferenciais</h5>
+                        <p class="small text-muted" style="white-space: pre-line;">{{ vaga.requisitos_desejaveis|default:"Não informado." }}</p>
+                    </div>
+                </div>
+            </section>
+
+            {% if vaga.beneficios %}
+            <section class="mb-5 bg-light p-4 border-start border-dark border-3">
+                <h3 class="h6 fw-black text-uppercase mb-3">Ecossistema de Benefícios</h3>
+                <p class="small text-muted mb-0" style="white-space: pre-line;">{{ vaga.beneficios }}</p>
+            </section>
+            {% endif %}
+        </div>
+
+        <div class="col-lg-4">
+            <div class="impact-card p-4">
+                <h3 class="h6 fw-black text-uppercase mb-4 border-bottom pb-2">Informações Técnicas</h3>
+                
+                <div class="mb-4">
+                    <span class="d-block small text-muted text-uppercase fw-bold mb-1">Tipo de Contrato</span>
+                    <span class="fw-bold">{{ vaga.get_tipo_contrato_display }}</span>
+                </div>
+
+                <div class="mb-4">
+                    <span class="d-block small text-muted text-uppercase fw-bold mb-1">Carga Horária</span>
+                    <span class="fw-bold">{{ vaga.carga_horaria }}</span>
+                </div>
+
+                {% if vaga.salario_min %}
+                <div class="mb-4">
+                    <span class="d-block small text-muted text-uppercase fw-bold mb-1">Faixa Remuneratória</span>
+                    <span class="h4 fw-black text-dark">R$ {{ vaga.salario_min|intcomma }} - {{ vaga.salario_max|intcomma }}</span>
+                </div>
+                {% endif %}
+
+                {% if vaga.cultura_empresa %}
+                <div class="mt-5">
+                    <a href="{{ vaga.cultura_empresa }}" target="_blank" class="text-dark fw-bold text-uppercase small text-decoration-none border-bottom border-dark pb-1">
+                        Conheça a Cultura da Empresa <i class="bi bi-box-arrow-up-right ms-1"></i>
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="mt-4 p-4 border border-secondary border-opacity-25">
+                <h4 class="small fw-black text-uppercase mb-3">Dica Trabalhe Já</h4>
+                <p class="small text-muted">Certifique-se de que seu <strong>Working Profile</strong> está atualizado. Candidatos com currículos completos têm 4x mais chances de alocação imediata.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

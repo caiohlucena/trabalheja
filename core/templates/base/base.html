@@ -1,0 +1,53 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>{% block title %}Trabalhe Já | Conectando Talentos a Oportunidades Reais{% endblock %}</title>
+
+    <meta name="description" content="A plataforma de recrutamento definitiva para empresas e talentos. Encontre vagas CLT, projetos Freelancer e os melhores profissionais do mercado em um só lugar.">
+    <meta name="keywords" content="vagas de emprego, recrutamento, seleção, freelancer, currículo online, trabalho remoto">
+    <meta name="author" content="Trabalhe Já">
+    <meta name="robots" content="index, follow">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://seusite.com.br/">
+    <meta property="og:title" content="Trabalhe Já | Recrutamento e Seleção Profissional">
+    <meta property="og:description" content="Conectamos empresas que buscam excelência a profissionais que valorizam propósito.">
+    <meta property="og:image" content="{% static 'img/og-image.jpg' %}">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Trabalhe Já | Recrutamento e Seleção">
+    <meta name="twitter:description" content="Encontre seu próximo desafio profissional ou o talento ideal para sua empresa.">
+    <meta name="twitter:image" content="{% static 'img/og-image.jpg' %}">
+
+    <link rel="icon" href="{% static 'favicon.ico' %}">
+
+    <!-- CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+
+    {% include 'base/navbar.html' %}
+
+    <main class="container my-5">
+        {% block content %}{% endblock %}
+    </main>
+
+    {% include 'base/footer.html' %}
+
+    <!-- JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    {% block extra_js %}{% endblock %}
+
+</body>
+</html>

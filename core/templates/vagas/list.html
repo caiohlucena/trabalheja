@@ -1,0 +1,87 @@
+{% extends "base/base.html" %}
+{% load humanize %}
+
+{% block title %}Oportunidades | Trabalhe Já{% endblock %}
+
+{% block content %}
+<div class="container py-5 reveal">
+    <div class="row border-bottom border-dark pb-4 mb-5 align-items-center">
+        <div class="col-md-8">
+            <span class="number-label">Marketplace de Oportunidades</span>
+            <h2 class="display-6 fw-black text-uppercase m-0">Vagas Disponíveis</h2>
+        </div>
+        <div class="col-md-4 text-md-end">
+            <p class="small text-muted mb-0 text-uppercase fw-bold">Total: {{ vagas|length }} posições</p>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        {% for vaga in vagas %}
+        <div class="col-12 col-md-6 col-lg-4">
+            <div class="impact-card p-4 h-100 d-flex flex-column justify-content-between shadow-sm border border-dark">
+
+                <div>
+                    <div class="mb-3">
+                        {% if vaga.alocacao_direta %}
+                        <span class="badge bg-dark text-white rounded-0 p-2 text-uppercase fw-bold"
+                            style="font-size: 0.55rem; letter-spacing: 1px;">
+                            Alocação Trabalhe Já
+                        </span>
+                        {% else %}
+                        <span class="badge border border-dark text-dark rounded-0 p-2 text-uppercase fw-bold"
+                            style="font-size: 0.55rem; letter-spacing: 1px;">
+                            Vaga Direta: {{ vaga.empresa.username|truncatechars:12 }}
+                        </span>
+                        {% endif %}
+                    </div>
+
+                    <h3 class="h5 fw-black text-uppercase mb-3" style="min-height: 2rem; line-height: 1.2; font-weight: 700 !important;">
+                        {{ vaga.titulo }}
+                    </h3>
+
+                    <div
+                        class="d-flex flex-column gap-2 mb-3 text-muted small text-uppercase fw-bold border-start border-gold ps-2">
+                        <span><i class="bi bi-geo-alt"></i> {{ vaga.localizacao }}</span>
+                        <span><i class="bi bi-briefcase"></i> {{ vaga.get_modelo_trabalho_display }}</span>
+                    </div>
+
+                    <p class="text-muted small mb-4"
+                        style="text-align: justify; display: -webkit-box; -webkit-line-clamp: 6; -webkit-box-orient: vertical; overflow: hidden; min-height: 100px;">
+                        {{ vaga.resumo|truncatechars:250 }}
+                    </p>
+                </div>
+
+                <div class="mt-auto">
+                    {% if vaga.salario_min and vaga.salario_max %}
+                    <div class="bg-light p-2 mb-3 border-start border-dark border-3">
+                        <p class="small m-0 text-dark fw-bold text-uppercase" style="font-size: 0.65rem;">
+                            Remuneração estimada
+                        </p>
+                        <p class="m-0 fw-black text-dark">
+                            R$ {{ vaga.salario_min|intcomma }} – {{ vaga.salario_max|intcomma }}
+                        </p>
+                    </div>
+                    {% endif %}
+
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'vaga_detail' vaga.id %}" class="btn-edit-premium text-center py-2">
+                            Ver Detalhes
+                        </a>
+
+                        {% if tipo_usuario == 'candidato' %}
+                        <a href="{% url 'vaga_apply' vaga.id %}" class="btn-gold-impact text-center py-2"
+                            style="font-size: 0.75rem;">
+                            Candidatar-se
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        {% empty %}
+        {% endfor %}
+    </div>
+</div>
+</div>
+{% endblock %}

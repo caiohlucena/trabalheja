@@ -1,0 +1,70 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom py-3">
+    <div class="container">
+
+        <a class="navbar-brand fw-bolder" href="{% url 'landing' %}" style="letter-spacing: -1.5px; font-size: 1.5rem;">
+            TRABALHE JÁ
+        </a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarNav" aria-controls="navbarNav"
+                aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto align-items-center">
+
+                <li class="nav-item">
+                    <a class="nav-link mx-2" href="{% url 'landing' %}">Início</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link mx-2" href="{% url 'vaga_list' %}">Vagas</a>
+                </li>
+
+                {% if user.is_authenticated %}
+
+                    {% if user.profile.tipo == 'empresa' %}
+                        <li class="nav-item">
+                            <a class="nav-link mx-2" href="{% url 'vaga_create' %}">Criar Vaga</a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link mx-2" href="{% url 'company_dashboard' %}">Minhas Vagas</a>
+                        </li>
+
+                    {% elif user.profile.tipo == 'candidato' %}
+                        <li class="nav-item">
+                            <a class="nav-link mx-2" href="{% url 'candidate_applications' %}">
+                                Minhas Candidaturas
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link mx-2" href="{% url 'candidate_profile' %}">
+                                Meu Perfil
+                            </a>
+                        </li>
+                    {% endif %}
+
+                    <li class="nav-item ms-3">
+                        <form method="post" action="{% url 'logout' %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-link nav-link p-0">
+                                Sair
+                            </button>
+                        </form>
+                    </li>
+
+                {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link ms-3 fw-bold text-dark" href="{% url 'login' %}">
+                            Login
+                        </a>
+                    </li>
+                {% endif %}
+
+            </ul>
+        </div>
+    </div>
+</nav>
