@@ -29,7 +29,7 @@
                         <span class="number-label" style="font-size: 0.6rem;">Perfil do Talento</span>
                         <h3 class="h5 fw-black text-uppercase mb-1">{{ c.candidato.get_full_name|default:c.candidato.username }}</h3>
                         <p class="small text-muted mb-3">{{ c.candidato.email }}</p>
-                        <a href="#" class="btn-edit-premium py-1 px-3" style="font-size: 0.65rem;">Visualizar Perfil</a>
+                        <a href="{% url 'company_view_candidate' c.candidato.id %}" class="btn-edit-premium py-1 px-3" style="font-size: 0.65rem;">Visualizar Perfil</a>
                     </div>
 
                     <div class="col-lg-4 mb-3 mb-lg-0 px-lg-4">

@@ -1,0 +1,129 @@
+{% extends "base/base.html" %}
+
+{% block title %}Perfil Profissional | {{ perfil.user.get_full_name }}{% endblock %}
+
+{% block content %}
+<div class="container py-5 reveal">
+    <div class="row border-bottom border-dark pb-5 mb-5 align-items-center">
+        <div class="col-md-3 col-lg-2 text-center text-md-start mb-4 mb-md-0">
+            {% if perfil.foto %}
+                <div class="position-relative d-inline-block">
+                    <img src="{{ perfil.foto.url }}" 
+                         alt="{{ perfil.user.get_full_name }}" 
+                         class="img-fluid rounded-circle border border-dark border-3 shadow-sm" 
+                         style="width: 160px; height: 160px; object-fit: cover;">
+                </div>
+            {% else %}
+                <div class="rounded-circle bg-light d-inline-flex align-items-center justify-content-center text-muted border border-dark border-2 shadow-sm" 
+                     style="width: 160px; height: 160px;">
+                    <i class="bi bi-person-fill" style="font-size: 5rem;"></i>
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="col-md-5 col-lg-6">
+            <span class="number-label">Working Profile</span>
+            <h2 class="display-4 fw-black text-uppercase mb-1" style="line-height: 1;">
+                {{ perfil.titulo_profissional|default:"Profissional" }}
+            </h2>
+            <p class="h4 fw-light text-muted text-uppercase mb-3" style="letter-spacing: 1px;">
+                {{ perfil.user.get_full_name }}
+            </p>
+            <p class="small text-uppercase fw-bold m-0 text-secondary">
+                <i class="bi bi-geo-alt"></i> {{ perfil.cidade }} — {{ perfil.estado }}
+            </p>
+        </div>
+
+        <div class="col-md-4 col-lg-4 mt-4 mt-md-0">
+            <div class="p-3 border border-dark bg-white shadow-sm">
+                <h3 class="h6 fw-black text-uppercase mb-3 border-bottom pb-2">Canais de Contato</h3>
+                <div class="d-flex flex-column gap-2">
+                    {% if perfil.email_contato %}
+                    <a href="mailto:{{ perfil.email_contato }}" class="text-decoration-none text-dark small">
+                        <i class="bi bi-envelope-at-fill me-2"></i> {{ perfil.email_contato }}
+                    </a>
+                    {% endif %}
+                    
+                    <a href="https://wa.me/{{ perfil.whatsapp|cut:' ' }}" target="_blank" class="text-decoration-none text-success small fw-bold">
+                        <i class="bi bi-whatsapp me-2"></i> {{ perfil.whatsapp }}
+                    </a>
+
+                    <div class="d-flex gap-3 mt-2">
+                        {% if perfil.linkedin %}
+                        <a href="{{ perfil.linkedin }}" target="_blank" class="text-dark h5"><i class="bi bi-linkedin"></i></a>
+                        {% endif %}
+                        {% if perfil.github %}
+                        <a href="{{ perfil.github }}" target="_blank" class="text-dark h5"><i class="bi bi-github"></i></a>
+                        {% endif %}
+                        {% if perfil.portfolio %}
+                        <a href="{{ perfil.portfolio }}" target="_blank" class="text-dark h5"><i class="bi bi-globe"></i></a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-5">
+        <div class="col-lg-8">
+            <h3 class="h6 fw-black text-uppercase mb-4">Sobre o Talento</h3>
+            <p class="lead fw-light lh-base text-dark">
+                {{ perfil.resumo_profissional|linebreaksbr|default:"Sem resumo cadastrado." }}
+            </p>
+        </div>
+        <div class="col-lg-4">
+            <div class="bg-light p-4 border-start border-dark border-3 h-100">
+                <h3 class="h6 fw-black text-uppercase mb-3">Preferências Operacionais</h3>
+                <ul class="list-unstyled mb-0">
+                    <li class="small mb-2"><strong>Modelo:</strong> {{ perfil.get_modelo_trabalho_display }}</li>
+                    <li class="small mb-2"><strong>Disponibilidade:</strong> {{ perfil.get_disponibilidade_display }}</li>
+                    {% if perfil.pretensao_salarial %}
+                    <li class="small mb-0"><strong>Pretensão:</strong> R$ {{ perfil.pretensao_salarial|floatformat:2 }}</li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <section class="mt-5 pt-5 border-top border-secondary border-opacity-25">
+        <h3 class="h4 fw-black text-uppercase mb-5">Trajetória Profissional</h3>
+
+        {% for exp in perfil.user.experiencias.all %}
+        <div class="row mb-5 reveal">
+            <div class="col-md-3">
+                <p class="small fw-bold text-muted text-uppercase mb-1">
+                    {{ exp.data_inicio|date:"M Y" }} — {% if exp.atual %}Atual{% else %}{{ exp.data_fim|date:"M Y" }}{% endif %}
+                </p>
+            </div>
+            <div class="col-md-7">
+                <h4 class="h5 fw-black text-uppercase mb-1">{{ exp.cargo }}</h4>
+                <h5 class="h6 fw-bold mb-3 text-primary">{{ exp.empresa }}</h5>
+                <p class="text-muted small lh-lg">{{ exp.descricao|linebreaksbr }}</p>
+            </div>
+        </div>
+        {% empty %}
+        <p class="text-muted italic">Nenhum registro de experiência anexado ao perfil.</p>
+        {% endfor %}
+    </section>
+
+    <section class="mt-5 pt-5 border-top border-secondary border-opacity-25">
+        <h3 class="h4 fw-black text-uppercase mb-5">Formação Acadêmica</h3>
+
+        <div class="row">
+            {% for formacao in perfil.user.formacoes.all %}
+            <div class="col-md-6 mb-4">
+                <div class="p-3 border border-light bg-light h-100">
+                    <span class="badge bg-dark text-uppercase mb-2" style="font-size: 0.6rem;">{{ formacao.get_status_display }}</span>
+                    <h4 class="h6 fw-black text-uppercase mb-1">{{ formacao.curso }}</h4>
+                    <p class="small text-muted mb-0">{{ formacao.instituicao }} — {{ formacao.get_grau_display }}</p>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12">
+                <p class="text-muted italic">Nenhuma formação acadêmica registrada.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+</div>
+{% endblock %}

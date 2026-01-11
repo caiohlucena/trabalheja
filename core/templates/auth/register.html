@@ -14,11 +14,12 @@
             </div>
 
             <div class="impact-card">
-                <form method="post" class="premium-form">
+                <form method="post" class="premium-form" id="registerForm">
                     {% csrf_token %}
                     
                     {% for field in form %}
-                    <div class="mb-4">
+                    {# Criamos uma div com ID dinâmico baseado no nome do campo para o JS encontrar #}
+                    <div class="mb-4 field-container" id="container_{{ field.name }}">
                         <label class="form-label">{{ field.label }}</label>
                         <div class="premium-input-wrapper">
                             {{ field }}
@@ -55,4 +56,40 @@
         </div>
     </div>
 </div>
+
+{# Script para lógica de exibição condicional do CNPJ #}
+<script>
+    function toggleCNPJ() {
+        // O Django gera o name="tipo" para o ChoiceField de tipo de usuário
+        const tipoSelect = document.querySelector('select[name="tipo"]');
+        const cnpjContainer = document.getElementById('container_cnpj');
+
+        if (tipoSelect && cnpjContainer) {
+            if (tipoSelect.value === 'empresa') {
+                cnpjContainer.style.display = 'block';
+            } else {
+                cnpjContainer.style.display = 'none';
+                // Limpa o valor se mudar para candidato para evitar confusão
+                cnpjContainer.querySelector('input').value = '';
+            }
+        }
+    }
+
+    // Monitora a mudança no select
+    document.addEventListener('DOMContentLoaded', function() {
+        const tipoSelect = document.querySelector('select[name="tipo"]');
+        if (tipoSelect) {
+            tipoSelect.addEventListener('change', toggleCNPJ);
+            // Executa ao carregar a página (importante se houver erro de validação)
+            toggleCNPJ();
+        }
+    });
+</script>
+
+<style>
+    /* Garante uma transição suave ao aparecer o campo */
+    .field-container {
+        transition: all 0.3s ease;
+    }
+</style>
 {% endblock %}

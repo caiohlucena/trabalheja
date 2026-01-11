@@ -1,0 +1,237 @@
+{% extends "base/base.html" %}
+
+{% block content %}
+<style>
+    :root {
+        --gold: #D4AF37;
+        --dark: #121212;
+    }
+
+    .text-gold {
+        color: var(--gold);
+    }
+
+    .bg-gold {
+        background-color: var(--gold);
+    }
+
+    .border-gold {
+        border: 1px solid var(--gold) !important;
+    }
+
+    .hero-section {
+        background: linear-gradient(135deg, #000 0%, #1a1a1a 100%);
+        color: white;
+        padding: 100px 0;
+    }
+
+    .feature-card {
+        background: #fff;
+        transition: 0.4s;
+        border-radius: 0;
+        position: relative;
+        overflow: hidden;
+        height: 100%;
+    }
+
+    .feature-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    }
+
+    .process-badge {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        font-weight: 900;
+        opacity: 0.1;
+        font-size: 2.5rem;
+    }
+
+    .btn-elite {
+        background: var(--gold);
+        color: #000;
+        font-weight: 800;
+        border: none;
+        padding: 20px 40px;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+    }
+
+    .btn-elite:hover {
+        background: #fff;
+        color: var(--gold);
+    }
+</style>
+
+<section class="hero-section">
+    <div class="container text-center">
+        <h1 class="display-3 fw-black text-uppercase mb-4">Seja contratado pela <span
+                class="text-gold">TrabalheJá</span></h1>
+        <p class="lead mb-5 mx-auto" style="max-width: 800px;">
+            Você não será apenas mais um currículo em uma empresa. Você será um <strong>Talento de Elite da
+                TrabalheJá</strong>, alocado em projetos de alto impacto, com a segurança de um contrato único e suporte
+            de mentores sêniores.
+        </p>
+        <a href="#fluxo" class="btn btn-outline-light btn-lg rounded-0 px-5">Como funciona a jornada?</a>
+    </div>
+</section>
+
+<section class="py-5 bg-light" id="fluxo">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-md-3">
+                <div class="feature-card p-4 border-top border-4 border-gold">
+                    <span class="process-badge">01</span>
+                    <h5 class="fw-bold text-uppercase">DNA Profissional</h5>
+                    <p class="small text-muted">A jornada começa com nosso <strong>Teste de Perfil
+                            Psicométrico</strong>. Não olhamos só o que você sabe, mas como você resolve problemas.</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="feature-card p-4 border-top border-4 border-gold">
+                    <span class="process-badge">02</span>
+                    <h5 class="fw-bold text-uppercase">Conexão Sênior</h5>
+                    <p class="small text-muted">Acesso exclusivo a debates e mentorias com profissionais sêniores do
+                        mercado. Você evolui enquanto trabalha.</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="feature-card p-4 border-top border-4 border-gold">
+                    <span class="process-badge">03</span>
+                    <h5 class="fw-bold text-uppercase">Match de Personalidade</h5>
+                    <p class="small text-muted">Apresentamos você apenas para tasks e empresas que batem 100% com seu
+                        perfil. Menos frustração, mais performance.</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="feature-card p-4 border-top border-4 border-gold">
+                    <span class="process-badge">04</span>
+                    <h5 class="fw-bold text-uppercase">Contrato Unificado</h5>
+                    <p class="small text-muted">Seu vínculo legal é 100% conosco. Mude de projeto ou empresa parceira
+                        sem burocracia ou perda de benefícios.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="py-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h2 class="fw-black text-uppercase mb-4">A Nova Era da <span class="text-gold">Terceirização de
+                        Elite</span></h2>
+                <div class="accordion accordion-flush" id="accordionExample">
+                    <div class="accordion-item mb-3 border shadow-sm">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button fw-bold" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#c1">
+                                Quem é meu chefe?
+                            </button>
+                        </h2>
+                        <div id="c1" class="accordion-collapse collapse show" data-bs-parent="#accordionExample">
+                            <div class="accordion-body">
+                                Você responde diretamente à <strong>TrabalheJá</strong>. Nós cuidamos do seu
+                                desenvolvimento, enquanto as empresas parceiras focam nas tasks técnicas.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item mb-3 border shadow-sm">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#c2">
+                                Posso atuar em mais de uma empresa?
+                            </button>
+                        </h2>
+                        <div id="c2" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+                            <div class="accordion-body">
+                                Sim! Dependendo da sua disponibilidade e perfil, você pode ser alocado em múltiplos
+                                projetos, diversificando seu portfólio sob um único contrato.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item mb-3 border shadow-sm">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#c3">
+                                Como funciona o teste de perfil e o que ele avalia?
+                            </button>
+                        </h2>
+                        <div id="c3" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+                            <div class="accordion-body">
+                                Nosso teste avalia <strong>traços comportamentais, raciocínio lógico e fit
+                                    cultural</strong>. Não existe "certo ou errado", mas sim o ambiente onde você
+                                performa melhor. Analisamos se você é mais produtivo em ambientes sob pressão, se tem
+                                perfil de liderança ou se prefere atuar como especialista técnico focado em execução.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item mb-3 border shadow-sm">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#c4">
+                                E se eu não me adaptar à empresa onde fui alocado?
+                            </button>
+                        </h2>
+                        <div id="c4" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+                            <div class="accordion-body">
+                                Este é o grande benefício: como seu contrato é com a <strong>TrabalheJá</strong>, nós
+                                realizamos uma nova análise de alocação. Você não perde o emprego; nós simplesmente
+                                buscamos um novo projeto ou empresa que se alinhe melhor ao seu momento atual, mantendo
+                                sua estabilidade financeira.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item mb-3 border shadow-sm">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#c5">
+                                Quem define meu salário e meus aumentos?
+                            </button>
+                        </h2>
+                        <div id="c5" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+                            <div class="accordion-body">
+                                A <strong>TrabalheJá</strong> gerencia seu plano de cargos e salários. À medida que você
+                                participa das mentorias, completa cursos internos e recebe avaliações positivas das
+                                empresas onde foi alocado, seu score de senioridade aumenta, refletindo em reajustes e
+                                bonificações diretas.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item mb-3 border shadow-sm">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#c6">
+                                O que acontece se o projeto na empresa parceira acabar?
+                            </button>
+                        </h2>
+                        <div id="c6" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+                            <div class="accordion-body">
+                                Você entra em nosso <strong>"Ciclo de Reciclagem de Elite"</strong>. Durante o intervalo
+                                entre projetos, você foca 100% do seu tempo em
+                                novos treinamentos e mentorias sêniores dentro da nossa plataforma até a próxima
+                                alocação.
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="col-lg-5 offset-lg-1 bg-dark text-white p-5">
+                <h4 class="text-gold fw-bold mb-4">Pronto para o Próximo Nível?</h4>
+                <p>Ao clicar abaixo, você inicia o processo de triagem para o Grupo Premium. O primeiro passo será o
+                    agendamento do seu Teste de Perfil.</p>
+                <form method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-elite w-100 py-4">Quero ser um Talento TrabalheJá</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+</section>
+{% endblock %}

@@ -1,0 +1,261 @@
+{% extends "base/base.html" %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div id="assessment-container" class="card border-0 shadow-lg overflow-hidden" style="border-radius: 20px;">
+                <div class="bg-dark p-4 d-flex justify-content-between align-items-center">
+                    <h5 class="text-gold mb-0 fw-bold text-uppercase">Mapeamento de DNA Profissional</h5>
+                    <span id="question-counter" class="badge border border-gold text-gold">Questão 1 de 25</span>
+                </div>
+
+                <div class="progress rounded-0" style="height: 5px; background: #222;">
+                    <div id="progress-bar" class="progress-bar bg-gold" style="width: 4%;"></div>
+                </div>
+
+                <div class="card-body p-5 bg-white">
+                    <form id="assessmentForm" method="post">
+                        {% csrf_token %}
+                        
+                        <div id="question-area">
+                            </div>
+
+                        <input type="hidden" id="score_e" name="execucao" value="0">
+                        <input type="hidden" id="score_a" name="analise" value="0">
+                        <input type="hidden" id="score_i" name="influencia" value="0">
+                        <input type="hidden" id="score_v" name="estrategia" value="0">
+                        <input type="hidden" id="score_r" name="resiliencia" value="0">
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+const perguntas = [
+    // EIXO: EXECUÇÃO (e)
+    { q: "Um prazo foi reduzido pela metade de surpresa. Qual sua primeira ação?", options: [
+        { t: "Focar na entrega do núcleo principal para garantir o prazo.", cat: "e" },
+        { t: "Analisar tecnicamente o que será sacrificado na qualidade.", cat: "a" },
+        { t: "Comunicar ao time e alinhar novas expectativas de entrega.", cat: "i" },
+        { t: "Rever o planejamento macro para entender o impacto futuro.", cat: "v" }
+    ]},
+    { q: "Você prefere uma lista de tarefas clara ou liberdade total para decidir como agir?", options: [
+        { t: "Uma lista clara: foco total em riscar as tarefas e entregar.", cat: "e" },
+        { t: "Liberdade: gosto de criar o método mais eficiente por conta própria.", cat: "a" },
+        { t: "Colaboração: prefiro decidir o caminho em conjunto com o time.", cat: "i" },
+        { t: "Direcionamento: prefiro que a meta seja clara, o 'como' eu planejo.", cat: "v" }
+    ]},
+    { q: "No final do dia, o que te dá mais satisfação?", options: [
+        { t: "O alto volume de tarefas concluídas e entregues.", cat: "e" },
+        { t: "A certeza de que nada foi entregue com erros técnicos.", cat: "a" },
+        { t: "Ter ajudado um colega ou mediado uma boa conversa.", cat: "i" },
+        { t: "Ter dado um passo concreto em direção à meta de longo prazo.", cat: "v" }
+    ]},
+    { q: "Como você lida com bloqueios técnicos durante o trabalho?", options: [
+        { t: "Tento resolver na prática imediatamente até conseguir.", cat: "e" },
+        { t: "Paro para pesquisar a fundo a causa raiz do problema.", cat: "a" },
+        { t: "Procuro alguém mais experiente para trocar uma ideia rápida.", cat: "i" },
+        { t: "Avalio se há um caminho alternativo que não atrase o projeto.", cat: "v" }
+    ]},
+    { q: "Se o cliente muda o requisito no meio da tarefa, você:", options: [
+        { t: "Ajusto o motor e sigo focado na nova meta sem reclamar.", cat: "e" },
+        { t: "Fico desconfortável com a falta de critério técnico na mudança.", cat: "a" },
+        { t: "Busco entender o porquê da mudança para explicar ao time.", cat: "i" },
+        { t: "Analiso se essa mudança realmente agrega valor ao produto final.", cat: "v" }
+    ]},
+
+    // EIXO: ANÁLISE (a)
+    { q: "Você prefere seguir um manual testado ou criar seu próprio método?", options: [
+        { t: "Manual: se já funciona, o foco deve ser na velocidade.", cat: "e" },
+        { t: "Manual: padrões garantem que não haverá falhas bobas.", cat: "a" },
+        { t: "Próprio: se o time concordar que o novo método é melhor.", cat: "i" },
+        { t: "Próprio: se o novo método trouxer vantagem competitiva.", cat: "v" }
+    ]},
+    { q: "O que te incomoda mais no ambiente de trabalho?", options: [
+        { t: "Lentidão e excesso de reuniões que não decidem nada.", cat: "e" },
+        { t: "Desorganização e falta de padrão técnico nas entregas.", cat: "a" },
+        { t: "Falta de empatia e clima pesado entre os colegas.", cat: "i" },
+        { t: "Trabalhar em algo que não faz sentido estrategicamente.", cat: "v" }
+    ]},
+    { q: "Em uma análise de dados, você prioriza:", options: [
+        { t: "O insight rápido para tomar uma decisão agora.", cat: "e" },
+        { t: "A precisão absoluta dos dados, custe o tempo que custar.", cat: "a" },
+        { t: "A forma como esses dados serão comunicados aos outros.", cat: "i" },
+        { t: "O que esses dados dizem sobre o futuro do negócio.", cat: "v" }
+    ]},
+    { q: "Como você reage a processos burocráticos necessários?", options: [
+        { t: "Tento automatizar ou pular o que for possível para ser rápido.", cat: "e" },
+        { t: "Sigo rigorosamente: processos existem para evitar riscos.", cat: "a" },
+        { t: "Sigo se eu entender que isso ajuda na organização do time.", cat: "i" },
+        { t: "Questiono se a burocracia está travando o crescimento.", cat: "v" }
+    ]},
+    { q: "Ao finalizar uma tarefa complexa, você:", options: [
+        { t: "Já pulo para a próxima imediatamente.", cat: "e" },
+        { t: "Reviso detalhadamente em busca de possíveis falhas.", cat: "a" },
+        { t: "Peço para alguém olhar e me dar um feedback.", cat: "i" },
+        { t: "Documento o aprendizado para futuras consultas.", cat: "v" }
+    ]},
+
+    // EIXO: INFLUÊNCIA/SOCIAL (i)
+    { q: "Em uma reunião com o cliente, você prefere:", options: [
+        { t: "Ir direto ao ponto e mostrar o que já foi feito.", cat: "e" },
+        { t: "Explicar os detalhes técnicos de como resolvemos o problema.", cat: "a" },
+        { t: "Ouvir as dores do cliente e criar uma conexão de confiança.", cat: "i" },
+        { t: "Discutir os próximos passos e o impacto no negócio.", cat: "v" }
+    ]},
+    { q: "Um colega de squad está com baixa performance. Você:", options: [
+        { t: "Acabo absorvendo as tarefas dele para o projeto não parar.", cat: "e" },
+        { t: "Aponto os erros técnicos dele de forma direta e objetiva.", cat: "a" },
+        { t: "Chamo para uma conversa e tento entender como posso ajudar.", cat: "i" },
+        { t: "Analiso se ele está na função correta para o perfil dele.", cat: "v" }
+    ]},
+    { q: "O que é mais importante na sua carreira hoje?", options: [
+        { t: "Ser reconhecido como alguém que resolve qualquer problema.", cat: "e" },
+        { t: "Ser uma referência técnica absoluta na minha área.", cat: "a" },
+        { t: "Ter uma rede de contatos forte e ser um bom líder.", cat: "i" },
+        { t: "Ter influência nas decisões de futuro da empresa.", cat: "v" }
+    ]},
+    { q: "Você prefere trabalhar em:", options: [
+        { t: "Um ambiente focado em metas agressivas e entrega.", cat: "e" },
+        { t: "Um ambiente silencioso e com foco técnico total.", cat: "a" },
+        { t: "Um ambiente descontraído e altamente colaborativo.", cat: "i" },
+        { t: "Um ambiente inovador que desafie o status quo.", cat: "v" }
+    ]},
+    { q: "Ao receber uma crítica em público, qual sua reação interna?", options: [
+        { t: "Penso em como corrigir o erro o mais rápido possível.", cat: "e" },
+        { t: "Fico analisando se a crítica tem fundamento lógico.", cat: "a" },
+        { t: "Me sinto desconfortável com o impacto no meu relacionamento com o grupo.", cat: "i" },
+        { t: "Reflito se essa crítica altera minha trajetória profissional.", cat: "v" }
+    ]},
+
+    // EIXO: ESTRATÉGIA (v)
+    { q: "Você se preocupa mais com:", options: [
+        { t: "A tarefa que precisa ser entregue hoje.", cat: "e" },
+        { t: "A qualidade do que está sendo construído agora.", cat: "a" },
+        { t: "O clima e a motivação das pessoas ao meu redor.", cat: "i" },
+        { t: "Como esse trabalho impactará o produto em um ano.", cat: "v" }
+    ]},
+    { q: "Se te oferecerem dois projetos, você escolhe:", options: [
+        { t: "O que tem o desafio de entrega mais rápido.", cat: "e" },
+        { t: "O que exige maior profundidade técnica.", cat: "a" },
+        { t: "O que tem o time mais entrosado e inspirador.", cat: "i" },
+        { t: "O que tem maior potencial de escala e mercado.", cat: "v" }
+    ]},
+    { q: "Você entende como a empresa parceira ganha dinheiro?", options: [
+        { t: "Não muito, meu foco é entregar o que me pedem.", cat: "e" },
+        { t: "Entendo a parte técnica do custo e eficiência.", cat: "a" },
+        { t: "Entendo como o cliente final percebe o valor do serviço.", cat: "i" },
+        { t: "Sim, analiso o modelo de negócio constantemente.", cat: "v" }
+    ]},
+    { q: "Como você se posiciona em debates sobre tecnologia?", options: [
+        { t: "Foco nas ferramentas que entregam resultado hoje.", cat: "e" },
+        { t: "Defendo as tecnologias mais robustas e seguras.", cat: "a" },
+        { t: "Busco o consenso sobre o que é melhor para o time.", cat: "i" },
+        { t: "Foco nas tendências que vão dominar o mercado amanhã.", cat: "v" }
+    ]},
+    { q: "Qual seu maior medo profissional?", options: [
+        { t: "Ficar estagnado sem tarefas ou desafios novos.", cat: "e" },
+        { t: "Cometer um erro técnico vergonhoso.", cat: "a" },
+        { t: "Ficar isolado e não pertencer a um grupo.", cat: "i" },
+        { t: "Trabalhar em algo que se torne irrelevante.", cat: "v" }
+    ]},
+
+    // EIXO: RESILIÊNCIA/ADAPTAÇÃO (r) - Distribuído
+    { q: "Como você lida com a mudança de uma empresa parceira para outra?", options: [
+        { t: "Com energia, gosto de novos desafios e entregas.", cat: "e" },
+        { t: "Com cautela, preciso entender os novos processos primeiro.", cat: "a" },
+        { t: "Com entusiasmo pelas novas pessoas que vou conhecer.", cat: "i" },
+        { t: "Com foco em como essa nova etapa soma no meu currículo.", cat: "v" }
+    ]},
+    { q: "Em dias de alta pressão, sua produtividade:", options: [
+        { t: "Aumenta: eu funciono melhor sob pressão.", cat: "e" },
+        { t: "Mantém: foco no método para não errar sob estresse.", cat: "a" },
+        { t: "Oscila: o clima ao redor afeta meu ritmo.", cat: "i" },
+        { t: "Estabiliza: foco no objetivo final para não me perder.", cat: "v" }
+    ]},
+    { q: "Você consegue 'desligar' do trabalho após o expediente?", options: [
+        { t: "Dificilmente, fico pensando no que falta entregar.", cat: "e" },
+        { t: "Sim, se eu sentir que deixei tudo organizado.", cat: "a" },
+        { t: "Depende de como foram as interações sociais do dia.", cat: "i" },
+        { t: "Sim, uso o tempo para pensar em outros planos e metas.", cat: "v" }
+    ]},
+    { q: "Como lida com feedbacks sobre pontos fracos?", options: [
+        { t: "Quero saber logo como treinar para superar isso.", cat: "e" },
+        { t: "Peço exemplos lógicos de onde eu falhei.", cat: "a" },
+        { t: "Fico reflexivo sobre como isso afeta a visão do time sobre mim.", cat: "i" },
+        { t: "Penso se esse ponto fraco impede meu próximo passo de carreira.", cat: "v" }
+    ]},
+    { q: "Admitir que não sabe algo na frente do cliente para você é:", options: [
+        { t: "Um atraso, prefiro pesquisar rápido e responder depois.", cat: "e" },
+        { t: "Necessário para manter a integridade técnica.", cat: "a" },
+        { t: "Uma forma de gerar conexão e humildade.", cat: "i" },
+        { t: "Uma jogada estratégica para buscar a solução correta.", cat: "v" }
+    ]}
+];
+
+let currentStep = 0;
+let finalScores = { e: 0, a: 0, i: 0, v: 0, r: 0 };
+
+function renderQuestion() {
+    const question = perguntas[currentStep];
+    const container = document.getElementById('question-area');
+    
+    let html = `<h3 class="fw-black mb-4">${question.q}</h3><div class="d-grid gap-3">`;
+    
+    question.options.forEach((opt, index) => {
+        html += `<button type="button" onclick="handleAnswer('${opt.cat}')" class="btn btn-outline-dark text-start p-3 border-2 fw-bold">
+                    ${opt.t}
+                 </button>`;
+    });
+    
+    html += `</div>`;
+    container.innerHTML = html;
+
+    // Atualiza contador e barra
+    document.getElementById('question-counter').innerText = `Questão ${currentStep + 1} de ${perguntas.length}`;
+    document.getElementById('progress-bar').style.width = ((currentStep + 1) / perguntas.length * 100) + '%';
+}
+
+function handleAnswer(category) {
+    finalScores[category] += 4; // Cada resposta vale 4 pontos (25x4 = 100 max)
+    
+    currentStep++;
+    if (currentStep < perguntas.length) {
+        renderQuestion();
+    } else {
+        finishAssessment();
+    }
+}
+
+function finishAssessment() {
+    // Preenche os campos ocultos
+    document.getElementById('score_e').value = finalScores.e;
+    document.getElementById('score_a').value = finalScores.a;
+    document.getElementById('score_i').value = finalScores.i;
+    document.getElementById('score_v').value = finalScores.v;
+    document.getElementById('score_r').value = finalScores.r;
+    
+    document.getElementById('question-area').innerHTML = `
+        <div class="text-center py-4">
+            <div class="spinner-border text-gold mb-3" role="status"></div>
+            <h2 class="fw-bold">Processando seu DNA de Elite...</h2>
+            <p>Estamos cruzando seus dados com as melhores oportunidades da TrabalheJá.</p>
+            <button type="submit" class="btn btn-dark btn-lg px-5 mt-3">FINALIZAR E VER MEU PERFIL</button>
+        </div>
+    `;
+}
+
+// Inicia o quiz
+renderQuestion();
+</script>
+
+<style>
+    .text-gold { color: #D4AF37; }
+    .bg-gold { background-color: #D4AF37; }
+    .btn-outline-dark:hover { background-color: #f8f9fa; border-color: #D4AF37; color: #D4AF37; }
+    .fw-black { font-weight: 900; }
+</style>
+{% endblock %}

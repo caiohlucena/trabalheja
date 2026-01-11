@@ -161,6 +161,21 @@ urlpatterns = [
         views.atualizar_status_candidatura,
         name='application_status_update'
     ),
+    
+    path(
+        'empresa/candidato/<int:user_id>/perfil/',
+        views.visualizar_perfil_candidato,
+        name='company_view_candidate'
+    ),
+
+    path(
+        'trabalhe-ja-talentos/', 
+        views.trabalhe_ja_talentos, 
+        name='trabalhe_ja_talentos' # Este nome deve bater com o erro!
+    ),
+    
+    path('teste-perfil/', views.teste_perfil_elite, name='teste_perfil_elite'),
+
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

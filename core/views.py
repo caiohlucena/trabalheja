@@ -3,6 +3,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login
 from django.contrib import messages
 from .decorators import apenas_empresa
+from django.contrib.auth.models import User
+
 from .forms import (
     CadastroForm,
     VagaForm,
@@ -41,7 +43,10 @@ def cadastro(request):
 
 @login_required
 def dashboard(request):
-    return render(request, 'dashboard.html')
+    # Verifica o tipo de perfil e redireciona para a área correta
+    if request.user.profile.tipo == 'empresa':
+        return redirect('company_dashboard')  # Nome da URL da área da empresa
+    return redirect('candidate_profile')      # Candidato vai direto para o perfil/currículo
 
 
 # ======================================================================
@@ -145,6 +150,23 @@ def atualizar_status_candidatura(request, candidatura_id):
             messages.success(request, 'Status atualizado com sucesso.')
 
     return redirect('vaga_applicants', vaga_id=candidatura.vaga.id)
+
+@apenas_empresa
+@login_required
+def visualizar_perfil_candidato(request, user_id):
+    candidato = get_object_or_404(User, id=user_id)
+
+    perfil = get_object_or_404(PerfilCandidato, user=candidato)
+
+    return render(request, 'empresa/candidato_profile.html', {
+        'perfil': perfil,
+        'candidato': candidato,
+        'experiencias': candidato.experiencias.all(),
+        'formacoes': candidato.formacoes.all(),
+        'competencias': candidato.competencias.all(),
+        'idiomas': candidato.idiomas.all(),
+    })
+
 
 
 # ======================================================================
@@ -344,3 +366,62 @@ def excluir_formacao(request, formacao_id):
     formacao.delete()
     messages.success(request, 'Formação acadêmica removida.')
     return redirect('candidate_profile')
+
+# ======================================================================
+# VAGAS – Trabalhe ja
+# ======================================================================
+
+@login_required
+def trabalhe_ja_talentos(request):
+    if request.user.profile.tipo != 'candidato':
+        messages.warning(request, "Área exclusiva para candidatos.")
+        return redirect('dashboard')
+
+    if request.method == 'POST':
+        # Aqui, em vez de ir para o perfil, mandamos para o teste de 25 perguntas
+        return redirect('teste_perfil_elite') 
+
+    return render(request, 'public/trabalhe_ja_selecao.html')
+
+
+@login_required
+def teste_perfil_elite(request):
+    if request.method == 'POST':
+        # 1. Captura os resultados do formulário
+        execucao = int(request.POST.get('execucao', 0))
+        analise = int(request.POST.get('analise', 0))
+        influencia = int(request.POST.get('influencia', 0))
+        estrategia = int(request.POST.get('estrategia', 0))
+        resiliencia = int(request.POST.get('resiliencia', 0))
+
+        # 2. Salva no perfil do candidato (Certifique-se de ter esses campos no seu Model Profile)
+        perfil = request.user.profile
+        perfil.is_elite = True
+        # Vamos guardar como um JSON para facilitar
+        perfil.resultado_teste_perfil = {
+            'execucao': execucao,
+            'analise': analise,
+            'influencia': influencia,
+            'estrategia:': estrategia,
+            'resiliencia': resiliencia
+        }
+        perfil.save()
+
+        messages.success(request, "Analise de DNA concluída! Bem-vindo ao Grupo Elite.")
+        return redirect('dashboard') # Redireciona para onde ele verá o resultado
+
+    return render(request, 'candidato/teste_perfil.html')
+
+@login_required
+def resultado_diagnostico(request):
+    perfil = request.user.profile
+    
+    # Se o candidato ainda não fez o teste, mandamos ele de volta
+    if not perfil.resultado_teste_perfil:
+        return redirect('teste_perfil_elite')
+        
+    context = {
+        'scores': perfil.resultado_teste_perfil,
+        'nome': request.user.first_name
+    }
+    return render(request, 'vagas/resultado_diagnostico.html', context)

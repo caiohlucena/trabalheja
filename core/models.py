@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.core.validators import MinLengthValidator, MaxLengthValidator
 
 
 # ----------------------------------------------------------------------
@@ -12,71 +13,116 @@ class Profile(models.Model):
         ('empresa', 'Empresa'),
     )
 
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
     tipo = models.CharField(max_length=20, choices=TIPO_USUARIO)
+    
+    # Nome para Candidatos / Razão Social para Empresas
+    nome_completo = models.CharField(max_length=255, null=True, blank=True, verbose_name="Nome ou Razão Social")
+    
+    # CNPJ apenas para Empresas
+    cnpj = models.CharField(max_length=18, null=True, blank=True, verbose_name="CNPJ")
+    
     criado_em = models.DateTimeField(auto_now_add=True)
 
-    def __str__(self):
-        return f"{self.user.email} ({self.tipo})"
+    disponivel_para_alocacao = models.BooleanField(default=False, verbose_name="Banco de Talentos TrabalheJá")
 
+    def __str__(self):
+        return f"{self.nome_completo} ({self.get_tipo_display()})"
 
 # ----------------------------------------------------------------------
 # PERFIL COMPLETO DO CANDIDATO (CURRÍCULO)
 # ----------------------------------------------------------------------
 
 class PerfilCandidato(models.Model):
+    # Relacionamento Interno
     user = models.OneToOneField(User, on_delete=models.CASCADE)
 
+    # --- 1. IDENTIDADE E APRESENTAÇÃO ---
+    foto = models.ImageField(
+        upload_to='fotos_perfil/', 
+        blank=True, 
+        null=True,
+        verbose_name="Foto de Perfil"
+    )
     titulo_profissional = models.CharField(
         max_length=150,
-        help_text="Ex: João Silva | Desenvolvedor Full Stack"
+        help_text="Ex: Desenvolvedor Full Stack PHP / React",
+        verbose_name="Título Profissional"
+    )
+    resumo_profissional = models.TextField(
+        verbose_name="Resumo Profissional",
+        help_text="Fale um pouco sobre sua trajetória e principais competências."
     )
 
-    foto = models.ImageField(
-        upload_to='fotos_perfil/',
+    # --- 2. CONTATO ---
+    email_contato = models.EmailField(
+        max_length=255, 
+        null=True, 
         blank=True,
-        null=True
+        verbose_name="E-mail de Contato",
+        help_text="Email que os recrutadores usarão para falar com você."
     )
-
-    cidade = models.CharField(max_length=100)
-    estado = models.CharField(max_length=50)
-
-    whatsapp = models.CharField(max_length=20)
-    linkedin = models.URLField(blank=True)
-    github = models.URLField(blank=True)
-    portfolio = models.URLField(blank=True)
-
-    resumo_profissional = models.TextField()
-
-    pretensao_salarial = models.DecimalField(
-        max_digits=10,
-        decimal_places=2,
-        null=True,
-        blank=True
-    )
-
-    disponibilidade = models.CharField(
+    whatsapp = models.CharField(
         max_length=20,
-        choices=(
-            ('imediata', 'Imediata'),
-            ('15_dias', '15 dias'),
-            ('30_dias', '30 dias'),
-        )
+        verbose_name="WhatsApp/Telefone"
+    )
+    linkedin = models.URLField(blank=True, verbose_name="LinkedIn")
+    github = models.URLField(blank=True, verbose_name="GitHub")
+    portfolio = models.URLField(blank=True, verbose_name="Portfólio/Site")
+
+    # --- 3. LOCALIZAÇÃO ---
+    ESTADOS_CHOICES = (
+        ('AC', 'Acre'), ('AL', 'Alagoas'), ('AP', 'Amapá'), ('AM', 'Amazonas'),
+        ('BA', 'Bahia'), ('CE', 'Ceará'), ('DF', 'Distrito Federal'), ('ES', 'Espírito Santo'),
+        ('GO', 'Goiás'), ('MA', 'Maranhão'), ('MT', 'Mato Grosso'), ('MS', 'Mato Grosso do Sul'),
+        ('MG', 'Minas Gerais'), ('PA', 'Pará'), ('PB', 'Paraíba'), ('PR', 'Paraná'),
+        ('PE', 'Pernambuco'), ('PI', 'Piauí'), ('RJ', 'Rio de Janeiro'), ('RN', 'Rio Grande do Norte'),
+        ('RS', 'Rio Grande do Sul'), ('RO', 'Rondônia'), ('RR', 'Roraima'), ('SC', 'Santa Catarina'),
+        ('SP', 'São Paulo'), ('SE', 'Sergipe'), ('TO', 'Tocantins'),
+    )
+    cidade = models.CharField(max_length=100, verbose_name="Cidade")
+    estado = models.CharField(
+        max_length=2,
+        choices=ESTADOS_CHOICES,
+        help_text="Sigla (Ex: SP, RJ)",
+        verbose_name="Estado (UF)"
     )
 
+    # --- 4. PREFERÊNCIAS E EXPECTATIVAS ---
     modelo_trabalho = models.CharField(
         max_length=20,
         choices=(
             ('remoto', 'Remoto'),
             ('hibrido', 'Híbrido'),
             ('presencial', 'Presencial'),
-        )
+        ),
+        verbose_name="Modelo de Trabalho Preferido"
+    )
+    disponibilidade = models.CharField(
+        max_length=20,
+        choices=(
+            ('imediata', 'Imediata'),
+            ('15_dias', '15 dias'),
+            ('30_dias', '30 dias'),
+        ),
+        verbose_name="Disponibilidade para Início"
+    )
+    pretensao_salarial = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        verbose_name="Pretensão Salarial"
     )
 
+    def save(self, *args, **kwargs):
+        if self.estado:
+            self.estado = self.estado.upper()
+        super(PerfilCandidato, self).save(*args, **kwargs)
+
     def __str__(self):
-        return self.titulo_profissional
-
-
+        return f"{self.user.get_full_name()} - {self.titulo_profissional}"
+    
 # ----------------------------------------------------------------------
 # EXPERIÊNCIA PROFISSIONAL
 # ----------------------------------------------------------------------
@@ -106,27 +152,36 @@ class ExperienciaProfissional(models.Model):
 # ----------------------------------------------------------------------
 
 class FormacaoAcademica(models.Model):
-    candidato = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        related_name='formacoes'
+    GRAU_CHOICES = (
+        ('ensino_medio', 'Ensino Médio'),
+        ('tecnico', 'Curso Técnico'),
+        ('tecnologo', 'Graduação Tecnológica (Tecnólogo)'),
+        ('bacharelado', 'Bacharelado'),
+        ('licenciatura', 'Licenciatura'),
+        ('pos_graduacao', 'Pós-Graduação (Lato Sensu)'),
+        ('mestrado', 'Mestrado'),
+        ('doutorado', 'Doutorado'),
+        ('mba', 'MBA'),
     )
 
-    grau = models.CharField(max_length=50)
-    curso = models.CharField(max_length=100)
-    instituicao = models.CharField(max_length=100)
-
-    status = models.CharField(
-        max_length=20,
-        choices=(
-            ('concluido', 'Concluído'),
-            ('cursando', 'Cursando'),
-            ('trancado', 'Trancado'),
-        )
+    STATUS_CHOICES = (
+        ('concluido', 'Concluído'),
+        ('cursando', 'Cursando'),
+        ('interrompido', 'Interrompido'),
     )
+
+    candidato = models.ForeignKey(User, on_delete=models.CASCADE, related_name='formacoes')
+    grau = models.CharField(max_length=50, choices=GRAU_CHOICES)
+    curso = models.CharField(max_length=150)
+    instituicao = models.CharField(max_length=150)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES)
+    
+    # Dica: Adicione datas para ficar mais profissional
+    data_inicio = models.DateField(null=True, blank=True)
+    data_fim = models.DateField(null=True, blank=True)
 
     def __str__(self):
-        return f"{self.curso} - {self.instituicao}"
+        return f"{self.grau} em {self.curso}"
 
 
 # ----------------------------------------------------------------------
@@ -222,9 +277,12 @@ class Vaga(models.Model):
 
     criada_em = models.DateTimeField(auto_now_add=True)
 
-    def __str__(self):
-        return f"{self.titulo} ({self.codigo_vaga})"
+    ativa = models.BooleanField(default=True)
 
+    def __str__(self):
+        # Tenta pegar o nome da empresa no perfil, se não existir usa o email
+        nome_empresa = getattr(self.empresa.profile, 'nome_completo', self.empresa.email)
+        return f"{self.titulo} - {nome_empresa}"
 
 # ----------------------------------------------------------------------
 # CANDIDATURA
